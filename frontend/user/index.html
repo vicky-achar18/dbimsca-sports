@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DBIMSCA Sports — Registration Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{--gold:#F5C518;--gold-dark:#C9960E;--navy:#0B1724;--navy-mid:#132033;--navy-light:#1E3250;--cream:#FAF7F0;--red:#D63030;--green:#1B8A4C;--text:#0B1724;--muted:#5A6A7A;--border:rgba(11,23,36,0.12);--radius:12px;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+  nav{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+  .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);letter-spacing:2px;}
+  .nav-brand span{color:#fff;}
+  .nav-links{display:flex;gap:2rem;}
+  .nav-links a{color:rgba(255,255,255,0.75);text-decoration:none;font-size:0.85rem;font-weight:500;letter-spacing:0.5px;transition:color 0.2s;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-btn{background:var(--gold);color:var(--navy)!important;padding:0.45rem 1.2rem;border-radius:6px;font-weight:600!important;}
+
+  .hero{background:var(--navy);padding:5rem 2rem 4rem;text-align:center;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 30px,rgba(245,197,24,0.03) 30px,rgba(245,197,24,0.03) 60px);}
+  .hero-eyebrow{font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:1rem;}
+  .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,6rem);color:#fff;line-height:0.95;letter-spacing:2px;margin-bottom:1.5rem;}
+  .hero h1 em{font-style:normal;color:var(--gold);display:block;}
+  .hero p{color:rgba(255,255,255,0.65);max-width:540px;margin:0 auto 2rem;font-size:1.05rem;line-height:1.7;}
+  .hero-cta{display:inline-flex;gap:1rem;flex-wrap:wrap;justify-content:center;}
+  .btn-primary{background:var(--gold);color:var(--navy);font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.95rem;padding:0.8rem 2rem;border:none;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;transition:background 0.2s,transform 0.15s;}
+  .btn-primary:hover{background:var(--gold-dark);transform:translateY(-1px);}
+  .btn-outline{background:transparent;color:#fff;font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.95rem;padding:0.8rem 2rem;border:1.5px solid rgba(255,255,255,0.3);border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;transition:border-color 0.2s,color 0.2s;}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+  .stats-bar{background:var(--gold);padding:1rem 2rem;display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;}
+  .stat{text-align:center;}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--navy);line-height:1;}
+  .stat-label{font-size:0.72rem;font-weight:600;color:rgba(11,23,36,0.6);letter-spacing:1px;text-transform:uppercase;}
+
+  section{padding:4rem 2rem;max-width:1100px;margin:0 auto;}
+  .section-label{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--gold-dark);letter-spacing:3px;text-transform:uppercase;margin-bottom:0.6rem;}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.2rem);color:var(--navy);letter-spacing:1px;margin-bottom:0.5rem;}
+  .section-sub{color:var(--muted);font-size:1rem;max-width:560px;line-height:1.7;margin-bottom:2.5rem;}
+
+  .events-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+  .event-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;cursor:pointer;}
+  .event-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(11,23,36,0.12);}
+  .event-card.selected{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,197,24,0.25);}
+  .event-banner{height:8px;}
+  .event-body{padding:1.25rem;}
+  .event-sport{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.3rem;}
+  .event-name{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:var(--navy);letter-spacing:0.5px;margin-bottom:0.5rem;}
+  .event-meta{display:flex;flex-direction:column;gap:0.3rem;margin-bottom:1rem;}
+  .event-meta-row{display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--muted);}
+  .event-meta-row svg{flex-shrink:0;}
+  .event-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--border);}
+  .event-fee{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--navy);}
+  .event-fee span{font-family:'DM Sans',sans-serif;font-size:0.75rem;color:var(--muted);font-weight:400;}
+  .badge{font-size:0.7rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:20px;letter-spacing:0.5px;text-transform:uppercase;}
+  .badge-open{background:#E8F7EE;color:#1B8A4C;}
+  .badge-limited{background:#FFF3CD;color:#856404;}
+  .badge-full{background:#FCE8E8;color:#D63030;}
+  .select-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+  .event-card.selected .select-check{background:var(--gold);border-color:var(--gold);}
+
+  #register{background:var(--navy);border-radius:20px;padding:3rem;max-width:1100px;margin:0 auto 4rem;}
+  #register .section-title{color:#fff;}
+  #register .section-sub{color:rgba(255,255,255,0.55);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+  .form-full{grid-column:1/-1;}
+  .form-group{display:flex;flex-direction:column;gap:0.4rem;}
+  .form-group label{font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.7);letter-spacing:0.5px;text-transform:uppercase;}
+  .form-group input,.form-group select,.form-group textarea{background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.95rem;padding:0.7rem 1rem;transition:border-color 0.2s;outline:none;width:100%;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);}
+  .form-group input::placeholder,.form-group textarea::placeholder{color:rgba(255,255,255,0.3);}
+  .form-group select option{background:var(--navy-mid);color:#fff;}
+  .form-group textarea{resize:vertical;min-height:90px;}
+  .selected-events-list{background:rgba(255,255,255,0.05);border:1.5px solid rgba(245,197,24,0.3);border-radius:8px;padding:1rem;min-height:60px;color:rgba(255,255,255,0.5);font-size:0.9rem;}
+  .selected-event-tag{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(245,197,24,0.15);border:1px solid rgba(245,197,24,0.4);color:var(--gold);font-size:0.8rem;font-weight:500;padding:0.3rem 0.7rem;border-radius:20px;margin:0.2rem;}
+  .form-divider{border:none;border-top:1px solid rgba(255,255,255,0.1);margin:1.5rem 0;}
+  .form-section-title{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:1rem;margin-top:0.5rem;}
+  .checkbox-group{display:flex;flex-wrap:wrap;gap:0.75rem;}
+  .checkbox-label{display:flex;align-items:center;gap:0.5rem;cursor:pointer;color:rgba(255,255,255,0.75);font-size:0.88rem;}
+  .checkbox-label input{accent-color:var(--gold);width:16px;height:16px;cursor:pointer;}
+  .fee-summary{background:rgba(245,197,24,0.1);border:1.5px solid rgba(245,197,24,0.3);border-radius:10px;padding:1.25rem;margin-top:1rem;}
+  .fee-row{display:flex;justify-content:space-between;align-items:center;font-size:0.9rem;color:rgba(255,255,255,0.7);margin-bottom:0.4rem;}
+  .fee-total{display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(245,197,24,0.3);padding-top:0.75rem;margin-top:0.5rem;}
+  .fee-total span:first-child{font-weight:600;color:#fff;font-size:0.95rem;}
+  .fee-total span:last-child{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);}
+  .submit-row{display:flex;align-items:center;justify-content:space-between;margin-top:2rem;flex-wrap:wrap;gap:1rem;}
+  .submit-btn{background:var(--gold);color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1px;padding:0.85rem 2.5rem;border:none;border-radius:8px;cursor:pointer;transition:background 0.2s,transform 0.15s;}
+  .submit-btn:hover{background:var(--gold-dark);transform:translateY(-1px);}
+  .submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+  .form-note{font-size:0.78rem;color:rgba(255,255,255,0.4);max-width:360px;line-height:1.6;}
+
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:#fff;padding:1rem 1.5rem;border-radius:10px;border-left:4px solid var(--gold);box-shadow:0 8px 32px rgba(0,0,0,0.35);font-size:0.9rem;z-index:999;transform:translateY(120%);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);max-width:340px;}
+  .toast.show{transform:translateY(0);}
+  .toast strong{display:block;color:var(--gold);margin-bottom:0.2rem;}
+
+  footer{background:var(--navy);color:rgba(255,255,255,0.5);text-align:center;padding:2.5rem 2rem;font-size:0.85rem;line-height:1.8;}
+  footer strong{color:var(--gold);}
+
+  @media(max-width:640px){.form-grid{grid-template-columns:1fr;}.nav-links{display:none;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">DBIMSCA <span>SPORTS</span></div>
+  <div class="nav-links">
+    <a href="#events">Events</a>
+    <a href="#register">Register</a>
+    <a href="/admin" class="nav-btn">Admin Panel →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <p class="hero-eyebrow">🏆 DBIMSCA Sports Association · 2025–26</p>
+  <h1>REGISTER FOR <em>COLLEGE SPORTS</em></h1>
+  <p>Compete, connect, and champion your sport. Browse available events and register in minutes.</p>
+  <div class="hero-cta">
+    <a href="#events" class="btn-primary">Browse Events</a>
+    <a href="#register" class="btn-outline">Register Now</a>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">12</div><div class="stat-label">Events</div></div>
+  <div class="stat"><div class="stat-num">1,200+</div><div class="stat-label">Participants</div></div>
+  <div class="stat"><div class="stat-num">10</div><div class="stat-label">Departments</div></div>
+  <div class="stat"><div class="stat-num">₹50K+</div><div class="stat-label">Prize Pool</div></div>
+</div>
+
+<!-- EVENTS -->
+<section id="events">
+  <p class="section-label">Choose Your Sport</p>
+  <h2 class="section-title">Available Events</h2>
+  <p class="section-sub">Click any card to select it. You can register for multiple events. Full events are shown but not selectable.</p>
+  <div class="events-grid" id="eventsGrid">
+    <div style="color:var(--muted);padding:2rem;text-align:center">Loading events…</div>
+  </div>
+</section>
+
+<!-- REGISTER -->
+<section id="register">
+  <p class="section-label">Student Registration</p>
+  <h2 class="section-title">Join the Competition</h2>
+  <p class="section-sub">Fill in your details below. All fields marked * are required.</p>
+
+  <!-- Selected events display -->
+  <div class="form-section-title">Selected Events</div>
+  <div class="selected-events-list" id="selectedEventsList">
+    <span style="color:rgba(255,255,255,0.35)">No events selected yet — choose from the cards above</span>
+  </div>
+
+  <hr class="form-divider"/>
+  <div class="form-section-title">Personal Information</div>
+  <div class="form-grid">
+    <div class="form-group"><label>First Name *</label><input type="text" id="firstName" placeholder="e.g. Arjun" required/></div>
+    <div class="form-group"><label>Last Name *</label><input type="text" id="lastName" placeholder="e.g. Sharma" required/></div>
+    <div class="form-group"><label>Email Address *</label><input type="email" id="email" placeholder="student@dbimsca.edu" required/></div>
+    <div class="form-group"><label>Phone Number *</label><input type="tel" id="phone" placeholder="+91 98765 43210" required/></div>
+    <div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required/></div>
+    <div class="form-group"><label>Gender *</label>
+      <select id="gender" required>
+        <option value="">Select gender</option>
+        <option>Male</option><option>Female</option>
+        <option>Non-binary</option><option>Prefer not to say</option>
+      </select>
+    </div>
+  </div>
+
+  <hr class="form-divider"/>
+  <div class="form-section-title">Academic Information</div>
+  <div class="form-grid">
+    <div class="form-group"><label>Student ID *</label><input type="text" id="studentId" placeholder="e.g. DBIM-2024-0042" required/></div>
+    <div class="form-group"><label>Department *</label>
+      <select id="department" required>
+        <option value="">Select department</option>
+        <option>Computer Science &amp; Engineering</option>
+        <option>Mechanical Engineering</option>
+        <option>Electronics &amp; Communication</option>
+        <option>Civil Engineering</option>
+        <option>Business Administration</option>
+        <option>Arts &amp; Humanities</option>
+        <option>Science (B.Sc)</option>
+        <option>Law</option><option>Medicine</option><option>Architecture</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Year of Study *</label>
+      <select id="year" required>
+        <option value="">Select year</option>
+        <option>1st Year</option><option>2nd Year</option>
+        <option>3rd Year</option><option>4th Year</option>
+        <option>5th Year (Integrated)</option><option>Postgraduate</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Blood Group *</label>
+      <select id="bloodGroup" required>
+        <option value="">Select blood group</option>
+        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+      </select>
+    </div>
+  </div>
+
+  <hr class="form-divider"/>
+  <div class="form-section-title">Emergency Contact</div>
+  <div class="form-grid">
+    <div class="form-group"><label>Contact Name *</label><input type="text" id="emergName" placeholder="Parent / Guardian name" required/></div>
+    <div class="form-group"><label>Contact Phone *</label><input type="tel" id="emergPhone" placeholder="+91 98765 43210" required/></div>
+    <div class="form-group"><label>Relationship *</label>
+      <select id="emergRel" required>
+        <option value="">Select</option>
+        <option>Parent</option><option>Sibling</option>
+        <option>Spouse</option><option>Friend</option><option>Other</option>
+      </select>
+    </div>
+  </div>
+
+  <hr class="form-divider"/>
+  <div class="form-section-title">Experience &amp; Health</div>
+  <div class="form-grid">
+    <div class="form-group"><label>Experience Level</label>
+      <select id="experience">
+        <option value="Beginner">Beginner — just starting out</option>
+        <option value="Intermediate">Intermediate — played at school level</option>
+        <option value="Advanced">Advanced — district / state level</option>
+        <option value="Elite">Elite — national / international level</option>
+      </select>
+    </div>
+    <div class="form-group"><label>T-Shirt Size</label>
+      <select id="tshirt">
+        <option value="XS">XS</option><option value="S">S</option>
+        <option value="M" selected>M</option><option value="L">L</option>
+        <option value="XL">XL</option><option value="XXL">XXL</option>
+      </select>
+    </div>
+    <div class="form-group form-full"><label>Known Medical Conditions / Allergies</label>
+      <textarea id="medical" placeholder="Leave blank if none. E.g. asthma, nut allergy, previous knee injury…"></textarea>
+    </div>
+    <div class="form-group form-full"><label>Additional Comments</label>
+      <textarea id="comments" placeholder="Anything else we should know?"></textarea>
+    </div>
+  </div>
+
+  <hr class="form-divider"/>
+  <div class="form-section-title">Declarations</div>
+  <div class="checkbox-group" style="flex-direction:column;">
+    <label class="checkbox-label"><input type="checkbox" id="chkTerms"/> I agree to the terms and conditions of DBIMSCA Sports Association.</label>
+    <label class="checkbox-label"><input type="checkbox" id="chkHealth"/> I certify that I am physically fit to participate in the selected events.</label>
+    <label class="checkbox-label"><input type="checkbox" id="chkIndemnity"/> I indemnify DBIMSCA College from any injury or loss during the events.</label>
+  </div>
+
+  <div class="fee-summary" id="feeSummary" style="display:none">
+    <div id="feeBreakdown"></div>
+    <div class="fee-total">
+      <span>Total Registration Fee</span>
+      <span id="feeTotal">₹0</span>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <p class="form-note">Your data is saved securely on the server. The admin can review and approve your registration.</p>
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">Submit Registration →</button>
+  </div>
+</section>
+
+<footer>
+  <strong>DBIMSCA SPORTS ASSOCIATION</strong><br/>
+  Academic Year 2025–2026 &nbsp;|&nbsp; sports@dbimsca.edu &nbsp;|&nbsp; +91 80 4567 8900
+</footer>
+
+<div class="toast" id="toast"><strong id="toastTitle"></strong><span id="toastMsg"></span></div>
+
+<script>
+const API = 'http://localhost:3000';
+let EVENTS = [];
+let selectedEvents = [];
+
+async function loadEvents() {
+  try {
+    const res = await fetch(`${API}/api/events`);
+    EVENTS = await res.json();
+    renderEvents();
+  } catch {
+    document.getElementById('eventsGrid').innerHTML =
+      '<p style="color:var(--red);padding:1rem">⚠️ Could not load events. Make sure the server is running on port 3000.</p>';
+  }
+}
+
+function renderEvents() {
+  const grid = document.getElementById('eventsGrid');
+  grid.innerHTML = EVENTS.map(e => {
+    const statusClass = e.status === 'open' ? 'badge-open' : e.status === 'limited' ? 'badge-limited' : 'badge-full';
+    const statusLabel = e.status === 'open' ? 'Open' : e.status === 'limited' ? 'Limited Spots' : 'Full';
+    const isSelected = selectedEvents.includes(e.id);
+    const isFull = e.status === 'full';
+    return `
+    <div class="event-card${isSelected?' selected':''}" id="card-${e.id}"
+      onclick="${isFull?'':` toggleEvent('${e.id}')`}"
+      style="${isFull?'opacity:0.6;cursor:not-allowed':''}">
+      <div class="event-banner" style="background:${e.color}"></div>
+      <div class="event-body">
+        <p class="event-sport">${e.sport}</p>
+        <p class="event-name">${e.name}</p>
+        <div class="event-meta">
+          <div class="event-meta-row">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ${e.date}
+          </div>
+          <div class="event-meta-row">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ${e.venue}
+          </div>
+          <div class="event-meta-row">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            ${e.remaining > 0 ? e.remaining + ' spots left' : 'No spots left'}
+          </div>
+        </div>
+        <div class="event-footer">
+          <div class="event-fee">₹${e.fee} <span>/person</span></div>
+          <div style="display:flex;align-items:center;gap:0.6rem">
+            <span class="badge ${statusClass}">${statusLabel}</span>
+            <div class="select-check" id="check-${e.id}">
+              ${isSelected ? `<svg width="12" height="12" fill="none" stroke="#0B1724" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEvent(id) {
+  const idx = selectedEvents.indexOf(id);
+  if (idx > -1) selectedEvents.splice(idx, 1);
+  else selectedEvents.push(id);
+  renderEvents();
+  renderSelectedList();
+  renderFee();
+}
+
+function renderSelectedList() {
+  const el = document.getElementById('selectedEventsList');
+  if (selectedEvents.length === 0) {
+    el.innerHTML = '<span style="color:rgba(255,255,255,0.35)">No events selected yet — choose from the cards above</span>';
+    return;
+  }
+  el.innerHTML = selectedEvents.map(id => {
+    const ev = EVENTS.find(e => e.id === id);
+    return `<span class="selected-event-tag">${ev.sport}: ${ev.name.split(' ').slice(0,3).join(' ')}… &nbsp;₹${ev.fee}</span>`;
+  }).join('');
+}
+
+function renderFee() {
+  const box = document.getElementById('feeSummary');
+  if (selectedEvents.length === 0) { box.style.display='none'; return; }
+  box.style.display = 'block';
+  let breakdown = '', total = 0;
+  selectedEvents.forEach(id => {
+    const ev = EVENTS.find(e => e.id === id);
+    breakdown += `<div class="fee-row"><span>${ev.name}</span><span>₹${ev.fee}</span></div>`;
+    total += ev.fee;
+  });
+  document.getElementById('feeBreakdown').innerHTML = breakdown;
+  document.getElementById('feeTotal').textContent = '₹' + total;
+}
+
+async function submitForm() {
+  const required = ['firstName','lastName','email','phone','dob','gender','studentId','department','year','bloodGroup','emergName','emergPhone','emergRel'];
+  for (const id of required) {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) { showToast('Missing Info','Please fill in all required fields.',false); el.focus(); return; }
+  }
+  if (selectedEvents.length === 0) { showToast('No Events','Please select at least one event.',false); return; }
+  if (!document.getElementById('chkTerms').checked)     { showToast('Agree to Terms','Please accept the terms and conditions.',false); return; }
+  if (!document.getElementById('chkHealth').checked)    { showToast('Health Declaration','Please certify your physical fitness.',false); return; }
+  if (!document.getElementById('chkIndemnity').checked) { showToast('Indemnity','Please accept the indemnity declaration.',false); return; }
+
+  const total = selectedEvents.reduce((s,id) => s + EVENTS.find(e=>e.id===id).fee, 0);
+  const evNames = selectedEvents.map(id => EVENTS.find(e=>e.id===id).name);
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+
+  try {
+    const res = await fetch(`${API}/api/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: document.getElementById('firstName').value.trim(),
+        lastName:  document.getElementById('lastName').value.trim(),
+        email:     document.getElementById('email').value.trim(),
+        phone:     document.getElementById('phone').value.trim(),
+        dob:       document.getElementById('dob').value,
+        gender:    document.getElementById('gender').value,
+        studentId: document.getElementById('studentId').value.trim(),
+        department:document.getElementById('department').value,
+        year:      document.getElementById('year').value,
+        bloodGroup:document.getElementById('bloodGroup').value,
+        emergName: document.getElementById('emergName').value.trim(),
+        emergPhone:document.getElementById('emergPhone').value.trim(),
+        emergRel:  document.getElementById('emergRel').value,
+        experience:document.getElementById('experience').value,
+        tshirt:    document.getElementById('tshirt').value,
+        medical:   document.getElementById('medical').value.trim() || 'None',
+        comments:  document.getElementById('comments').value.trim() || 'None',
+        events:    evNames,
+        totalFee:  total,
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Registration Successful! 🎉', `Welcome! Your ID is #${data.id}. Admin will review soon.`, true);
+      resetForm();
+    } else {
+      showToast('Error', data.error || 'Something went wrong.', false);
+    }
+  } catch {
+    showToast('Server Error','Could not connect to the server. Is it running?', false);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Submit Registration →';
+  }
+}
+
+function resetForm() {
+  ['firstName','lastName','email','phone','dob','gender','studentId','department','year','bloodGroup','emergName','emergPhone','emergRel','medical','comments']
+    .forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('experience').value = 'Beginner';
+  document.getElementById('tshirt').value = 'M';
+  ['chkTerms','chkHealth','chkIndemnity'].forEach(id => { document.getElementById(id).checked = false; });
+  selectedEvents = [];
+  renderEvents();
+  renderSelectedList();
+  renderFee();
+}
+
+function showToast(title, msg, success) {
+  const t = document.getElementById('toast');
+  t.style.borderLeftColor = success ? 'var(--gold)' : 'var(--red)';
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4500);
+}
+
+loadEvents();
+</script>
+</body>
+</html>

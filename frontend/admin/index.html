@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Panel — DBIMSCA Sports</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{--gold:#F5C518;--gold-dark:#C9960E;--navy:#0B1724;--navy-mid:#132033;--navy-light:#1E3250;--cream:#F4F6FA;--red:#D63030;--green:#1B8A4C;--muted:#5A6A7A;--border:#E2E8F0;--radius:12px;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);min-height:100vh;}
+
+  /* LOGIN */
+  #loginScreen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:999;}
+  .login-box{background:#fff;border-radius:20px;padding:3rem 2.5rem;width:100%;max-width:400px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.4);}
+  .login-logo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--gold);letter-spacing:3px;margin-bottom:0.25rem;}
+  .login-sub{font-size:0.85rem;color:var(--muted);margin-bottom:2rem;}
+  .login-box input{width:100%;padding:0.9rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+  .login-box input:focus{border-color:var(--gold);}
+  .login-btn{width:100%;margin-top:1rem;background:var(--navy);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;padding:0.9rem;border:none;border-radius:8px;cursor:pointer;transition:background 0.2s;}
+  .login-btn:hover{background:var(--gold);color:var(--navy);}
+  .login-err{color:var(--red);font-size:0.83rem;margin-top:0.75rem;display:none;}
+
+  /* LAYOUT */
+  #app{display:none;min-height:100vh;}
+  .topbar{background:var(--navy);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+  .topbar-brand{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gold);letter-spacing:2px;}
+  .topbar-brand span{color:#fff;}
+  .topbar-right{display:flex;align-items:center;gap:1.5rem;}
+  .topbar-right a{color:rgba(255,255,255,0.65);font-size:0.85rem;text-decoration:none;transition:color 0.2s;}
+  .topbar-right a:hover{color:var(--gold);}
+  .logout-btn{background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.75);padding:0.35rem 1rem;border-radius:6px;font-size:0.82rem;cursor:pointer;transition:all 0.2s;}
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+  .main{padding:2rem;max-width:1400px;margin:0 auto;}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem;margin-bottom:2rem;}
+  .stat-card{background:#fff;border-radius:var(--radius);padding:1.5rem;border:1.5px solid var(--border);display:flex;flex-direction:column;gap:0.4rem;}
+  .stat-card .label{font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+  .stat-card .value{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--navy);}
+  .stat-card .value.gold{color:var(--gold-dark);}
+  .stat-card .value.green{color:var(--green);}
+  .stat-card .value.red{color:var(--red);}
+
+  /* TOOLBAR */
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem 1.5rem;}
+  .toolbar-left{display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;}
+  .search-box{display:flex;align-items:center;gap:0.5rem;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem;}
+  .search-box input{border:none;background:transparent;outline:none;font-size:0.9rem;font-family:'DM Sans',sans-serif;width:200px;}
+  .filter-select{background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem;font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;}
+  .action-btn{display:inline-flex;align-items:center;gap:0.5rem;background:var(--navy);color:#fff;font-size:0.85rem;font-weight:600;padding:0.5rem 1.1rem;border:none;border-radius:8px;cursor:pointer;transition:background 0.2s;text-decoration:none;}
+  .action-btn:hover{background:var(--gold);color:var(--navy);}
+  .action-btn.green-btn{background:var(--green);}
+  .action-btn.green-btn:hover{background:#15713d;}
+
+  /* TABLE */
+  .table-wrap{background:#fff;border-radius:var(--radius);border:1.5px solid var(--border);overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+  thead th{background:var(--navy);color:rgba(255,255,255,0.75);font-size:0.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:0.85rem 1rem;text-align:left;white-space:nowrap;}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:#f8fafc;}
+  td{padding:0.9rem 1rem;vertical-align:middle;}
+
+  .status-badge{display:inline-block;font-size:0.7rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:20px;letter-spacing:0.5px;text-transform:uppercase;}
+  .status-pending{background:#FFF3CD;color:#856404;}
+  .status-approved{background:#E8F7EE;color:#1B8A4C;}
+  .status-rejected{background:#FCE8E8;color:#D63030;}
+
+  .row-actions{display:flex;gap:0.4rem;}
+  .row-btn{background:transparent;border:1.5px solid var(--border);border-radius:6px;padding:0.3rem 0.65rem;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+  .row-btn.approve{color:var(--green);border-color:var(--green);}
+  .row-btn.approve:hover{background:var(--green);color:#fff;}
+  .row-btn.reject{color:var(--red);border-color:var(--red);}
+  .row-btn.reject:hover{background:var(--red);color:#fff;}
+  .row-btn.del{color:var(--muted);border-color:var(--border);}
+  .row-btn.del:hover{background:var(--red);color:#fff;border-color:var(--red);}
+
+  .empty-state{text-align:center;color:var(--muted);padding:3rem;font-size:0.95rem;}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(11,23,36,0.6);display:none;align-items:center;justify-content:center;z-index:200;padding:1rem;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:#fff;border-radius:16px;padding:2rem;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.35);}
+  .modal h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--navy);margin-bottom:1.5rem;letter-spacing:1px;}
+  .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem 1.5rem;}
+  .modal-field label{font-size:0.72rem;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:0.2rem;}
+  .modal-field p{font-size:0.92rem;color:var(--navy);}
+  .modal-close{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:0.6rem 1.5rem;cursor:pointer;font-size:0.9rem;margin-top:1.5rem;font-family:'DM Sans',sans-serif;font-weight:600;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;padding:0.9rem 1.4rem;border-radius:10px;border-left:4px solid var(--gold);box-shadow:0 8px 32px rgba(0,0,0,0.3);font-size:0.88rem;z-index:999;transform:translateY(120%);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);max-width:320px;}
+  .toast.show{transform:translateY(0);}
+  .toast strong{display:block;color:var(--gold);margin-bottom:0.15rem;}
+
+  @media(max-width:640px){.toolbar{flex-direction:column;align-items:stretch;}.modal-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">DBIMSCA SPORTS</div>
+    <p class="login-sub">Admin Panel · Restricted Access</p>
+    <input type="password" id="pwInput" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">Log In →</button>
+    <p class="login-err" id="loginErr">❌ Incorrect password. Try again.</p>
+    <p style="margin-top:1.5rem;font-size:0.78rem;color:#aaa;">Default password: <code>kaiswa1823</code></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">DBIMSCA <span>ADMIN</span></div>
+    <div class="topbar-right">
+      <a href="/user" target="_blank">← User Portal</a>
+      <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="label">Total Registrations</div><div class="value" id="sTotal">—</div></div>
+      <div class="stat-card"><div class="label">Pending</div><div class="value gold" id="sPending">—</div></div>
+      <div class="stat-card"><div class="label">Approved</div><div class="value green" id="sApproved">—</div></div>
+      <div class="stat-card"><div class="label">Rejected</div><div class="value red" id="sRejected">—</div></div>
+      <div class="stat-card"><div class="label">Total Revenue</div><div class="value" id="sRevenue">—</div></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="search-box">
+          <svg width="15" height="15" fill="none" stroke="#5A6A7A" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Search name, ID, email…" oninput="applyFilters()"/>
+        </div>
+        <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select class="filter-select" id="deptFilter" onchange="applyFilters()">
+          <option value="">All Departments</option>
+          <option>Computer Science &amp; Engineering</option>
+          <option>Mechanical Engineering</option>
+          <option>Electronics &amp; Communication</option>
+          <option>Civil Engineering</option>
+          <option>Business Administration</option>
+          <option>Arts &amp; Humanities</option>
+          <option>Science (B.Sc)</option>
+          <option>Law</option><option>Medicine</option><option>Architecture</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <button class="action-btn" onclick="exportCSV()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+        <button class="action-btn green-btn" onclick="bulkApprove()">✓ Approve All Pending</button>
+        <button class="action-btn" onclick="loadData()" style="background:var(--muted);">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Student</th>
+            <th>Student ID</th>
+            <th>Department</th>
+            <th>Year</th>
+            <th>Events</th>
+            <th>Fee (₹)</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2 id="modalTitle">Registration Details</h2>
+    <div class="modal-grid" id="modalBody"></div>
+    <button class="modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><strong id="toastTitle"></strong><span id="toastMsg"></span></div>
+
+<script>
+const API = 'http://localhost:3000';
+let TOKEN = '';
+let allData = [];
+let filtered = [];
+
+/* ── AUTH ── */
+async function doLogin() {
+  const pw = document.getElementById('pwInput').value;
+  try {
+    const res  = await fetch(`${API}/api/admin/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pw })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      TOKEN = data.token;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadData();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+    }
+  } catch {
+    document.getElementById('loginErr').textContent = '⚠️ Server not reachable. Start server first.';
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+function logout() {
+  TOKEN = '';
+  location.reload();
+}
+
+/* ── DATA ── */
+async function loadData() {
+  await Promise.all([loadStats(), loadRegistrations()]);
+}
+
+async function loadStats() {
+  try {
+    const res  = await fetch(`${API}/api/admin/stats`, { headers: { 'x-admin-token': TOKEN } });
+    const data = await res.json();
+    document.getElementById('sTotal').textContent    = data.total;
+    document.getElementById('sPending').textContent  = data.pending;
+    document.getElementById('sApproved').textContent = data.approved;
+    document.getElementById('sRejected').textContent = data.rejected;
+    document.getElementById('sRevenue').textContent  = '₹' + data.revenue.toLocaleString('en-IN');
+  } catch {}
+}
+
+async function loadRegistrations() {
+  try {
+    const res = await fetch(`${API}/api/admin/registrations`, { headers: { 'x-admin-token': TOKEN } });
+    allData   = await res.json();
+    applyFilters();
+  } catch {
+    document.getElementById('tableBody').innerHTML = '<tr><td colspan="10" class="empty-state">⚠️ Could not load data.</td></tr>';
+  }
+}
+
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const status = document.getElementById('statusFilter').value;
+  const dept   = document.getElementById('deptFilter').value;
+
+  filtered = allData.filter(r => {
+    const matchSearch = !search ||
+      `${r.firstName} ${r.lastName}`.toLowerCase().includes(search) ||
+      (r.email||'').toLowerCase().includes(search) ||
+      (r.studentId||'').toLowerCase().includes(search);
+    const matchStatus = !status || r.status === status;
+    const matchDept   = !dept   || r.department === dept;
+    return matchSearch && matchStatus && matchDept;
+  });
+
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No registrations found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map((r, i) => {
+    const events = Array.isArray(r.events) ? r.events.join(', ') : r.events || '—';
+    const statusClass = `status-${r.status || 'pending'}`;
+    return `
+    <tr>
+      <td><strong>${i+1}</strong></td>
+      <td>
+        <div style="font-weight:600">${r.firstName} ${r.lastName}</div>
+        <div style="font-size:0.78rem;color:var(--muted)">${r.email}</div>
+      </td>
+      <td style="font-family:monospace;font-size:0.8rem">${r.studentId}</td>
+      <td style="font-size:0.82rem">${r.department}</td>
+      <td>${r.year}</td>
+      <td style="font-size:0.78rem;color:var(--muted);max-width:200px">${events.length > 60 ? events.slice(0,60)+'…' : events}</td>
+      <td><strong>₹${r.totalFee}</strong></td>
+      <td><span class="status-badge ${statusClass}">${r.status||'pending'}</span></td>
+      <td style="font-size:0.78rem;color:var(--muted)">${r.timestamp||'—'}</td>
+      <td>
+        <div class="row-actions">
+          <button class="row-btn" onclick="viewDetail(${r.id})">👁</button>
+          <button class="row-btn approve" onclick="updateStatus(${r.id},'approved')">✓</button>
+          <button class="row-btn reject"  onclick="updateStatus(${r.id},'rejected')">✕</button>
+          <button class="row-btn del"     onclick="deleteReg(${r.id})">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── ACTIONS ── */
+async function updateStatus(id, status) {
+  try {
+    const res = await fetch(`${API}/api/admin/registrations/${id}`, {
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','x-admin-token':TOKEN},
+      body: JSON.stringify({ status })
+    });
+    if (res.ok) {
+      const idx = allData.findIndex(r => r.id === id);
+      if (idx > -1) allData[idx].status = status;
+      applyFilters();
+      loadStats();
+      showToast('Updated', `Status set to "${status}".`, true);
+    }
+  } catch { showToast('Error','Could not update.',false); }
+}
+
+async function deleteReg(id) {
+  if (!confirm('Delete this registration? This cannot be undone.')) return;
+  try {
+    const res = await fetch(`${API}/api/admin/registrations/${id}`, {
+      method:'DELETE', headers:{'x-admin-token':TOKEN}
+    });
+    if (res.ok) {
+      allData = allData.filter(r => r.id !== id);
+      applyFilters(); loadStats();
+      showToast('Deleted','Registration removed.',true);
+    }
+  } catch { showToast('Error','Could not delete.',false); }
+}
+
+async function bulkApprove() {
+  const pending = allData.filter(r => r.status === 'pending');
+  if (pending.length === 0) { showToast('Nothing to approve','All pending cleared.',false); return; }
+  if (!confirm(`Approve all ${pending.length} pending registrations?`)) return;
+  for (const r of pending) await updateStatus(r.id, 'approved');
+  showToast('Bulk Approved', `${pending.length} registrations approved.`, true);
+}
+
+function exportCSV() {
+  window.open(`${API}/api/admin/export.csv?t=${TOKEN}`, '_blank');
+  // also set header via fetch for proper auth:
+  fetch(`${API}/api/admin/export.csv`, { headers:{'x-admin-token':TOKEN} })
+    .then(r => r.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'registrations.csv'; a.click();
+      URL.revokeObjectURL(url);
+    });
+}
+
+function viewDetail(id) {
+  const r = allData.find(r => r.id === id);
+  if (!r) return;
+  document.getElementById('modalTitle').textContent = `${r.firstName} ${r.lastName}`;
+  const fields = [
+    ['Student ID', r.studentId], ['Email', r.email], ['Phone', r.phone],
+    ['Date of Birth', r.dob], ['Gender', r.gender], ['Department', r.department],
+    ['Year', r.year], ['Blood Group', r.bloodGroup],
+    ['Emergency Contact', r.emergName], ['Emerg. Phone', r.emergPhone],
+    ['Emerg. Relationship', r.emergRel], ['Experience', r.experience],
+    ['T-Shirt Size', r.tshirt], ['Medical', r.medical],
+    ['Status', r.status], ['Total Fee', '₹' + r.totalFee],
+    ['Submitted', r.timestamp],
+    ['Events', Array.isArray(r.events) ? r.events.join(', ') : r.events],
+    ['Comments', r.comments],
+  ];
+  document.getElementById('modalBody').innerHTML = fields.map(([label, val]) => `
+    <div class="modal-field">
+      <label>${label}</label>
+      <p>${val || '—'}</p>
+    </div>`).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function showToast(title, msg, success) {
+  const t = document.getElementById('toast');
+  t.style.borderLeftColor = success ? 'var(--gold)' : 'var(--red)';
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMsg').textContent   = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>
