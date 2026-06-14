@@ -201,7 +201,16 @@
 <div class="toast" id="toast"><strong id="toastTitle"></strong><span id="toastMsg"></span></div>
 
 <script>
-const API = ' ';
+const API = 'https://dbimsca-sports-1.onrender.com';
+const EVENT_NAMES = {
+  'e1':'Cricket','e2':'Football','e3':'Basketball','e4':'Badminton',
+  'e5':'Table Tennis','e6':'Athletics','e7':'Volleyball','e8':'Chess',
+  'e9':'Swimming','e10':'Kabaddi','e11':'Carrom','e12':'Cycling'
+};
+function formatEvents(events) {
+  if (!Array.isArray(events)) return events || '—';
+  return events.map(e => EVENT_NAMES[e] || e).join(', ');
+}
 let TOKEN = '';
 let allData = [];
 let filtered = [];
@@ -286,7 +295,7 @@ function renderTable() {
     return;
   }
   tbody.innerHTML = filtered.map((r, i) => {
-    const events = Array.isArray(r.events) ? r.events.join(', ') : r.events || '—';
+    const events = formatEvents(r.events);
     const statusClass = `status-${r.status || 'pending'}`;
     return `
     <tr>
@@ -380,7 +389,7 @@ function viewDetail(id) {
     ['T-Shirt Size', r.tshirt], ['Medical', r.medical],
     ['Status', r.status], ['Total Fee', '₹' + r.totalFee],
     ['Submitted', r.timestamp],
-    ['Events', Array.isArray(r.events) ? r.events.join(', ') : r.events],
+    ['Events', formatEvents(r.events)],
     ['Comments', r.comments],
   ];
   document.getElementById('modalBody').innerHTML = fields.map(([label, val]) => `
