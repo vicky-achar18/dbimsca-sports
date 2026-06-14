@@ -444,7 +444,20 @@ function showToast(title, msg, success) {
   setTimeout(() => t.classList.remove('show'), 4500);
 }
 
+// Load events on page open, then refresh slots every 10 seconds
 loadEvents();
+setInterval(async () => {
+  try {
+    const res = await fetch(`${API}/api/events`);
+    const freshEvents = await res.json();
+    // Only re-render if slot data actually changed
+    if (JSON.stringify(freshEvents.map(e => ({id:e.id, remaining:e.remaining, status:e.status})))
+      !== JSON.stringify(EVENTS.map(e => ({id:e.id, remaining:e.remaining, status:e.status})))) {
+      EVENTS = freshEvents;
+      renderEvents();
+    }
+  } catch {}
+}, 10000);
 </script>
 </body>
 </html>
