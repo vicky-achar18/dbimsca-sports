@@ -405,7 +405,7 @@ async function submitForm() {
         tshirt:    document.getElementById('tshirt').value,
         medical:   document.getElementById('medical').value.trim() || 'None',
         comments:  document.getElementById('comments').value.trim() || 'None',
-        events:    evNames,
+        events:    selectedEvents,
         totalFee:  total,
       })
     });
