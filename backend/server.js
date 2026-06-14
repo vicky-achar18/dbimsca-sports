@@ -172,16 +172,16 @@ app.listen(PORT, () => {
 
 /* ── event data ── */
 const EVENTS = [
-  { id: 'e1', sport: 'Cricket', name: 'Inter-Dept Cricket Championship', date: 'Feb 8–10, 2026', venue: 'Main Ground', fee: 350, slots: 120, remaining: 43, color: '#1B8A4C', status: 'open' },
-  { id: 'e2', sport: 'Football', name: 'Campus Football League', date: 'Feb 15–16, 2026', venue: 'Football Field A', fee: 300, slots: 80, remaining: 12, color: '#D63030', status: 'limited' },
-  { id: 'e3', sport: 'Basketball', name: '3×3 Basketball Showdown', date: 'Feb 22, 2026', venue: 'Indoor Court', fee: 250, slots: 60, remaining: 60, color: '#E87722', status: 'open' },
-  { id: 'e4', sport: 'Badminton', name: 'Badminton Singles & Doubles', date: 'Mar 1–2, 2026', venue: 'Sports Hall B', fee: 200, slots: 100, remaining: 0, color: '#7C3AED', status: 'full' },
-  { id: 'e5', sport: 'Table Tennis', name: 'TT Open Tournament', date: 'Mar 7, 2026', venue: 'Recreation Centre', fee: 150, slots: 64, remaining: 29, color: '#0EA5E9', status: 'open' },
-  { id: 'e6', sport: 'Athletics', name: 'Annual Track & Field Meet', date: 'Mar 14–15, 2026', venue: 'Athletics Track', fee: 200, slots: 200, remaining: 88, color: '#F5C518', status: 'open' },
-  { id: 'e7', sport: 'Volleyball', name: 'Volleyball Championship', date: 'Mar 20, 2026', venue: 'Volleyball Court', fee: 280, slots: 80, remaining: 24, color: '#10B981', status: 'open' },
-  { id: 'e8', sport: 'Chess', name: 'Rapid Chess Open', date: 'Mar 28, 2026', venue: 'Academic Block 3', fee: 100, slots: 128, remaining: 55, color: '#6366F1', status: 'open' },
-  { id: 'e9', sport: 'Swimming', name: 'Inter-College Swim Meet', date: 'Apr 5, 2026', venue: 'Aquatic Centre', fee: 300, slots: 50, remaining: 7, color: '#0284C7', status: 'limited' },
-  { id: 'e10', sport: 'Kabaddi', name: 'Kabaddi League', date: 'Apr 12, 2026', venue: 'Multi-Purpose Court', fee: 200, slots: 90, remaining: 38, color: '#B45309', status: 'open' },
-  { id: 'e11', sport: 'Carrom', name: 'Carrom Doubles Championship', date: 'Apr 18, 2026', venue: 'Common Room', fee: 100, slots: 80, remaining: 40, color: '#BE185D', status: 'open' },
-  { id: 'e12', sport: 'Cycling', name: 'Campus Cycling Race', date: 'Apr 25, 2026', venue: 'College Circuit', fee: 150, slots: 60, remaining: 21, color: '#059669', status: 'open' },
+  { id: 'e1', sport: 'Cricket', name: 'Inter-Dept Cricket Championship', date: 'Feb 8–10, 2026', venue: 'Main Ground', fee: 350, slots: 25, remaining: 25, color: '#1B8A4C', status: 'open' },
+  { id: 'e2', sport: 'Football', name: 'Campus Football League', date: 'Feb 15–16, 2026', venue: 'Football Field A', fee: 300, slots: 22, remaining: 22, color: '#D63030', status: 'open' },
+  { id: 'e3', sport: 'Basketball', name: '3×3 Basketball Showdown', date: 'Feb 22, 2026', venue: 'Indoor Court', fee: 250, slots: 20, remaining: 20, color: '#E87722', status: 'open' },
+  { id: 'e4', sport: 'Badminton', name: 'Badminton Singles & Doubles', date: 'Mar 1–2, 2026', venue: 'Sports Hall B', fee: 200, slots: 20, remaining: 20, color: '#7C3AED', status: 'open' },
+  { id: 'e5', sport: 'Table Tennis', name: 'TT Open Tournament', date: 'Mar 7, 2026', venue: 'Recreation Centre', fee: 150, slots: 24, remaining: 24, color: '#0EA5E9', status: 'open' },
+  { id: 'e6', sport: 'Athletics', name: 'Annual Track & Field Meet', date: 'Mar 14–15, 2026', venue: 'Athletics Track', fee: 200, slots: 30, remaining: 30, color: '#F5C518', status: 'open' },
+  { id: 'e7', sport: 'Volleyball', name: 'Volleyball Championship', date: 'Mar 20, 2026', venue: 'Volleyball Court', fee: 280, slots: 48, remaining: 48, color: '#10B981', status: 'open' },
+  { id: 'e8', sport: 'Chess', name: 'Rapid Chess Open', date: 'Mar 28, 2026', venue: 'Academic Block 3', fee: 100, slots: 14, remaining: 14, color: '#6366F1', status: 'open' },
+  { id: 'e9', sport: 'Swimming', name: 'Inter-College Swim Meet', date: 'Apr 5, 2026', venue: 'Aquatic Centre', fee: 300, slots: 10, remaining:10, color: '#0284C7', status: 'open' },
+  { id: 'e10', sport: 'Kabaddi', name: 'Kabaddi League', date: 'Apr 12, 2026', venue: 'Multi-Purpose Court', fee: 200, slots: 50, remaining: 50, color: '#B45309', status: 'open' },
+  { id: 'e11', sport: 'Carrom', name: 'Carrom Doubles Championship', date: 'Apr 18, 2026', venue: 'Common Room', fee: 100, slots: 10, remaining: 10, color: '#BE185D', status: 'open' },
+  { id: 'e12', sport: 'Cycling', name: 'Campus Cycling Race', date: 'Apr 25, 2026', venue: 'College Circuit', fee: 150, slots: 16, remaining: 16, color: '#059669', status: 'open' },
 ];
